@@ -5,7 +5,7 @@ Database should be created locally, then using migrations file in this repositor
 - add-migration StartEmployeeTable
 - update-database
 
-After this you have to edit connection string in json file:
+After this you have to edit connection string in json file (https://github.com/vadimffe/BlazorCompanyManager/blob/master/BlazorCompanyManager/appsettings.json):
 ```
 {
   "ConnectionStrings": {
