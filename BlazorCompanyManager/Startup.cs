@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorCompanyManager
 {
@@ -28,8 +29,9 @@ namespace BlazorCompanyManager
     {
       services.AddRazorPages();
       services.AddServerSideBlazor();
+      services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MyConnection")));
       services.AddSingleton<WeatherForecastService>();
-      services.AddSingleton<IEmployeeService, EmployeeService>();
+      services.AddTransient<IEmployeeService, EmployeeService>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

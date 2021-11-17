@@ -11,7 +11,7 @@ namespace BlazorCompanyManager.Data
 
     Employee GetEmployee(Guid id);
 
-    void UpdateEmployee(Employee employee);
+    bool UpdateEmployee(Employee employee);
 
     void AddEmployee(Employee employee);
 

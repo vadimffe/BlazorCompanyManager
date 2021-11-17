@@ -3,12 +3,52 @@
 
 <h1>Employees</h1>
 <br />
-<a href="employee/0">Add employee</a>
+<button class="btn-primary" @onclick="ShowPopup">Add employee</button>
+@if (showPopup)
+{
+  <div class="modal" tabindex="-1" style="display:block;">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add new record</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="ClosePopup">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <EditForm Model="employees" OnValidSubmit="SubmitForm">
+          <div class="modal-body">
+            <table border="1">
+              <tr>
+                <td>Employee name</td>
+                <td><input type="text" placeholder="Enter Employee Name.." @bind="employee.Name" /></td>
+              </tr>
+              <tr>
+                <td>Department</td>
+                <td><input type="text" placeholder="Enter Department.." @bind="employee.Department" /></td>
+              </tr>
+              <tr>
+                <td>Salary</td>
+                <td><input type="text" placeholder="Enter Salary.." @bind="employee.Salary" /></td>
+              </tr>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="ClosePopup">Cancel</button>
+            <button type="submit" class="btn btn-primary" @onclick="ClosePopup">Save changes</button>
+          </div>
+        </EditForm>
+      </div>
+    </div>
+  </div>
+}
 <table class="table">
   <thead>
     <tr>
       <td>Id</td>
       <td>Name</td>
+      <td>Department</td>
+      <td>Salary</td>
+      <td></td>
       <td></td>
     </tr>
   </thead>
@@ -18,12 +58,10 @@
       <tr>
         <td>@employee.Id</td>
         <td>@employee.Name</td>
-        <td>
-          <a href="employee/@employee.Id">Edit</a>
-        </td>
-        <td>
-          <button class="btn btn-primary" @onclick="@(e => OnDelete(employee.Id))">Delete</button>
-        </td>
+        <td>@employee.Department</td>
+        <td>@employee.Salary</td>
+        <td><button class="btn-info" @onclick="@(e => EditRecord(employee.Id))">Edit</button></td>
+        <td><button class="btn btn-danger" @onclick="@(e => OnDelete(employee.Id))">Delete</button></td>
       </tr>
     }
   </tbody>
@@ -32,15 +70,57 @@
 
 @code {
 
+  [Parameter]
+  public string Id { get; set; }
+
+  private BlazorCompanyManager.Data.Employee employee { get; set; }
   private List<BlazorCompanyManager.Data.Employee> employees;
+  private bool showPopup;
 
   protected override void OnInitialized()
   {
-    employees = EmployeeService.GetEmployees();
+    this.employee = new Data.Employee();
+    this.employees = this.EmployeeService.GetEmployees();
   }
 
-  private void OnDelete(Guid id)
+  private void ShowPopup()
   {
-    EmployeeService.DeleteEmployee(id);
+    this.showPopup = true;
+    this.employee = new Data.Employee();
+  }
+
+  private void ClosePopup()
+  {
+    this.showPopup = false;
+  }
+
+  private void EditRecord(Guid employee)
+  {
+    this.showPopup = true;
+    this.employee = this.EmployeeService.GetEmployee(employee);
+    this.employees = this.EmployeeService.GetEmployees();
+  }
+
+  private void OnDelete(Guid employee)
+  {
+    this.EmployeeService.DeleteEmployee(employee);
+    this.employees = this.EmployeeService.GetEmployees();
+  }
+
+  private void SubmitForm()
+  {
+    var updatedRecord = false;
+    if (employee.Id != Guid.Empty)
+    {
+      updatedRecord = this.EmployeeService.UpdateEmployee(employee);
+      this.showPopup = false;
+    }
+    else
+    {
+      this.employee.Id = Guid.Empty;
+      this.EmployeeService.AddEmployee(employee);
+    }
+
+    this.employees = this.EmployeeService.GetEmployees();
   }
 }

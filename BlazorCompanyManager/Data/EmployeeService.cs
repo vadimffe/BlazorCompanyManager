@@ -7,42 +7,51 @@ namespace BlazorCompanyManager.Data
 {
   public class EmployeeService : IEmployeeService
   {
-    private List<Employee> employees = new List<Employee>() 
-    { 
-      new Employee
-      {
-        Id = Guid.NewGuid(),
-        Name = "Employee 1"
-      }
-    };
+    protected readonly ApplicationDbContext dbContext;
+
+    public EmployeeService(ApplicationDbContext db)
+    {
+      this.dbContext = db;
+    }
+
+    public List<Employee> GetEmployees()
+    {
+      return this.dbContext.EmployeeTable.ToList();
+    }
 
     public void AddEmployee(Employee employee)
     {
-      var id = Guid.NewGuid();
-      employee.Id = id;
-      employees.Add(employee);
+      this.dbContext.EmployeeTable.Add(employee);
+      this.dbContext.SaveChanges();
     }
 
     public void DeleteEmployee(Guid id)
     {
       var employee = GetEmployee(id);
-      employees.Remove(employee);
+      this.dbContext.EmployeeTable.Remove(employee);
+      this.dbContext.SaveChanges();
+    }
+
+    public bool UpdateEmployee(Employee employee)
+    {
+      Employee tempEmployee = this.dbContext.EmployeeTable.FirstOrDefault(x => x.Id == employee.Id);
+      if (tempEmployee != null)
+      {
+        tempEmployee.Name = employee.Name;
+        tempEmployee.Department = employee.Department;
+        tempEmployee.Salary = employee.Salary;
+        this.dbContext.SaveChanges();
+      }
+      else
+      {
+        return false;
+      }
+      return true;
     }
 
     public Employee GetEmployee(Guid id)
     {
-      return employees.SingleOrDefault(x => x.Id == id);
-    }
-
-    public List<Employee> GetEmployees()
-    {
-      return employees;
-    }
-
-    public void UpdateEmployee(Employee employee)
-    {
-      var getOldEmployee = GetEmployee(employee.Id);
-      getOldEmployee.Name = employee.Name;
+      return this.dbContext.EmployeeTable.FirstOrDefault(x => x.Id == id);
     }
   }
 }
