@@ -1,5 +1,7 @@
 ﻿using BlazorCompanyManager.Data;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,10 +20,24 @@ namespace BlazorCompanyManager.Pages
     protected BlazorCompanyManager.Data.Employee employee { get; set; }
     protected List<BlazorCompanyManager.Data.Employee> employees;
     protected bool showPopup;
+    protected double startX, startY, offsetX, offsetY;
 
     public EmployeesBase()
     {
       this.employee = new Data.Employee();
+      this.offsetY = 100;
+    }
+
+    protected void OnDragStart(DragEventArgs args)
+    {
+      startX = args.ClientX;
+      startY = args.ClientY;
+    }
+
+    protected void OnDragEnd(DragEventArgs args)
+    {
+      offsetX += args.ClientX - startX;
+      offsetY += args.ClientY - startY;
     }
 
     protected override void OnInitialized()
