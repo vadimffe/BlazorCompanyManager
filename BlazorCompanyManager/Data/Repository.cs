@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace BlazorCompanyManager.Data
 {
-  public class EmployeeService : IEmployeeService
+  public class Repository : IRepository
   {
     protected readonly ApplicationDbContext dbContext;
 
-    public EmployeeService(ApplicationDbContext db)
+    public Repository(ApplicationDbContext db)
     {
       this.dbContext = db;
     }

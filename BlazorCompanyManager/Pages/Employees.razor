@@ -1,5 +1,5 @@
 ﻿@page "/employees"
-@inject BlazorCompanyManager.Data.IEmployeeService EmployeeService
+@inherits EmployeesBase
 
 <h1>Employees</h1>
 <br />
@@ -66,61 +66,3 @@
     }
   </tbody>
 </table>
-
-
-@code {
-
-  [Parameter]
-  public string Id { get; set; }
-
-  private BlazorCompanyManager.Data.Employee employee { get; set; }
-  private List<BlazorCompanyManager.Data.Employee> employees;
-  private bool showPopup;
-
-  protected override void OnInitialized()
-  {
-    this.employee = new Data.Employee();
-    this.employees = this.EmployeeService.GetEmployees();
-  }
-
-  private void ShowPopup()
-  {
-    this.showPopup = true;
-    this.employee = new Data.Employee();
-  }
-
-  private void ClosePopup()
-  {
-    this.showPopup = false;
-  }
-
-  private void EditRecord(Guid employee)
-  {
-    this.showPopup = true;
-    this.employee = this.EmployeeService.GetEmployee(employee);
-    this.employees = this.EmployeeService.GetEmployees();
-  }
-
-  private void OnDelete(Guid employee)
-  {
-    this.EmployeeService.DeleteEmployee(employee);
-    this.employees = this.EmployeeService.GetEmployees();
-  }
-
-  private void SubmitForm()
-  {
-    var updatedRecord = false;
-    if (employee.Id != Guid.Empty)
-    {
-      updatedRecord = this.EmployeeService.UpdateEmployee(employee);
-      this.showPopup = false;
-    }
-    else
-    {
-      this.employee.Id = Guid.Empty;
-      this.EmployeeService.AddEmployee(employee);
-    }
-
-    this.employees = this.EmployeeService.GetEmployees();
-  }
-}

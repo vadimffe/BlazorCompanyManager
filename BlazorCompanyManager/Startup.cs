@@ -31,7 +31,7 @@ namespace BlazorCompanyManager
       services.AddServerSideBlazor();
       services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MyConnection")));
       services.AddSingleton<WeatherForecastService>();
-      services.AddTransient<IEmployeeService, EmployeeService>();
+      services.AddTransient<IRepository, Repository>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
