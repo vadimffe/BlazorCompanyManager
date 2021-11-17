@@ -13,7 +13,7 @@ namespace BlazorCompanyManager.Pages
     public string Id { get; set; }
     
     [Inject]
-    private IRepository EmployeeService { get; set; }
+    protected IRepository Repository { get; set; }
 
     protected BlazorCompanyManager.Data.Employee employee { get; set; }
     protected List<BlazorCompanyManager.Data.Employee> employees;
@@ -26,7 +26,7 @@ namespace BlazorCompanyManager.Pages
 
     protected override void OnInitialized()
     {
-      this.employees = this.EmployeeService.GetEmployees();
+      this.employees = this.Repository.GetEmployees();
     }
 
     protected void ShowPopup()
@@ -43,30 +43,30 @@ namespace BlazorCompanyManager.Pages
     protected void EditRecord(Guid employee)
     {
       this.showPopup = true;
-      this.employee = this.EmployeeService.GetEmployee(employee);
-      this.employees = this.EmployeeService.GetEmployees();
+      this.employee = this.Repository.GetEmployee(employee);
+      this.employees = this.Repository.GetEmployees();
     }
 
     protected void OnDelete(Guid employee)
     {
-      this.EmployeeService.DeleteEmployee(employee);
-      this.employees = this.EmployeeService.GetEmployees();
+      this.Repository.DeleteEmployee(employee);
+      this.employees = this.Repository.GetEmployees();
     }
 
     protected void SubmitForm()
     {
       if (employee.Id != Guid.Empty)
       {
-        this.EmployeeService.UpdateEmployee(employee);
+        this.Repository.UpdateEmployee(employee);
         this.showPopup = false;
       }
       else
       {
         this.employee.Id = Guid.Empty;
-        this.EmployeeService.AddEmployee(employee);
+        this.Repository.AddEmployee(employee);
       }
 
-      this.employees = this.EmployeeService.GetEmployees();
+      this.employees = this.Repository.GetEmployees();
     }
   }
 }
