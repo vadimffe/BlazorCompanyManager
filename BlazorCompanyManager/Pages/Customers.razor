@@ -4,6 +4,7 @@
 <h1>Customers</h1>
 <br />
 <button class="btn btn-primary" @onclick="ShowDialog">Add customer</button>
+<button class="btn btn-primary" type="button" @onclick="@(() => DownloadExcelDocument())">Download</button>
 <br />
 <br />
 @if (showPopup)
@@ -12,11 +13,10 @@
        @onmousemove="OnMouseMove">
     <div class="modal-dialog">
       <div class="modal-content shadow-lg p-3 mb-5 bg-white rounded"
-           @onmouseup="OnMouseUp" @onmousedown="OnMouseDown"
            style="position:absolute; top: @(offsetY)px; left: @(offsetX)px;cursor:@cursor;">
-        <div class="modal-header">
+        <div class="modal-header" @onmouseup="OnMouseUp" @onmousedown="OnMouseDown">
           <h5 class="modal-title">Add new customer</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="CloseDialog">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
