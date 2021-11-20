@@ -124,46 +124,54 @@ else
 }
 
 @functions {
-    private async Task DownloadFile()
+  private async Task DownloadFile()
+  {
+    using (var workbook = new XLWorkbook())
     {
-      using (var workbook = new XLWorkbook())
+      IXLWorksheet worksheet =
+      workbook.Worksheets.Add("Customers");
+      worksheet.Cell(1, 1).Value = "Company name";
+      worksheet.Cell(1, 2).Value = "City";
+      worksheet.Cell(1, 3).Value = "Address";
+      worksheet.Cell(1, 4).Value = "Post code";
+      worksheet.Cell(1, 5).Value = "Phone number";
+      worksheet.Cell(1, 6).Value = "Business ID";
+
+      for (int i = 1; i <= 6; i++)
       {
-        IXLWorksheet worksheet =
-        workbook.Worksheets.Add("Customers");
-        worksheet.Cell(1, 1).Value = "Company name";
-        worksheet.Cell(1, 2).Value = "City";
-        worksheet.Cell(1, 3).Value = "Address";
-        worksheet.Cell(1, 4).Value = "Post code";
-        worksheet.Cell(1, 5).Value = "Phone number";
-        worksheet.Cell(1, 6).Value = "Business ID";
+        worksheet.Cell(1, i).Style.Font.Bold = true;
+      }
 
-        for (int i = 1; i <= 6; i++)
-        {
-          worksheet.Cell(1, i).Style.Font.Bold = true;
-          worksheet.Cell(1, i).Style.Fill.BackgroundColor = XLColor.Green;
-        }
+      int index = 1;
+      foreach (var customer in this.customers)
+      {
+        worksheet.Cell(index + 1, 1).Value = customer.CompanyName;
+        worksheet.Cell(index + 1, 2).Value = customer.City;
+        worksheet.Cell(index + 1, 3).Value = customer.Address;
+        worksheet.Cell(index + 1, 4).Value = customer.PostCode;
+        worksheet.Cell(index + 1, 5).Value = customer.PhoneNumber;
+        worksheet.Cell(index + 1, 6).Value = customer.BusinessID;
 
-        int index = 1;
-        foreach (var customer in this.customers)
-        {
-          worksheet.Cell(index + 1, 1).Value = customer.CompanyName;
-          worksheet.Cell(index + 1, 2).Value = customer.City;
-          worksheet.Cell(index + 1, 3).Value = customer.Address;
-          worksheet.Cell(index + 1, 4).Value = customer.PostCode;
-          worksheet.Cell(index + 1, 5).Value = customer.PhoneNumber;
-          worksheet.Cell(index + 1, 6).Value = customer.BusinessID;
+        index++;
+      }
 
-          index++;
-        }
+      worksheet.Columns().AdjustToContents();  // Adjust column width
+      worksheet.Rows().AdjustToContents();
 
-        using (var stream = new MemoryStream())
-        {
-          workbook.SaveAs(stream);
-          var content = stream.ToArray();
+      var firstCell = worksheet.FirstCellUsed();
+      var lastCell = worksheet.LastCellUsed();
+      var range = worksheet.Range(firstCell.Address, lastCell.Address);
 
-          var fileName = "Customers.xlsx";
-          await JS.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(content));
-        }
+      var table = range.CreateTable();
+
+      using (var stream = new MemoryStream())
+      {
+        workbook.SaveAs(stream);
+        var content = stream.ToArray();
+
+        var fileName = "Customers.xlsx";
+        await JS.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(content));
       }
     }
+  }
 }
