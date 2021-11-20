@@ -28,9 +28,11 @@ namespace BlazorCompanyManager
     // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
     public void ConfigureServices(IServiceCollection services)
     {
+      var dbContext = Configuration.GetValue<string>("Configuration:DBContext");
+      services.AddDbContextFactory<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MyConnection")), ServiceLifetime.Singleton);
       services.AddRazorPages();
       services.AddServerSideBlazor();
-      services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MyConnection")));
+      //services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MyConnection")));
       services.AddSingleton<WeatherForecastService>();
       services.AddTransient<IRepository, Repository>();
     }

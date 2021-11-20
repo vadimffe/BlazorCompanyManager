@@ -13,7 +13,7 @@ namespace BlazorCompanyManager.Pages
   {
     [Parameter]
     public string Id { get; set; }
-    
+
     [Inject]
     protected IRepository Repository { get; set; }
 
@@ -25,6 +25,7 @@ namespace BlazorCompanyManager.Pages
     public EmployeesBase()
     {
       this.employee = new Data.Employee();
+      this.employees = new List<Employee>();
       this.offsetY = 100;
     }
 
@@ -40,9 +41,9 @@ namespace BlazorCompanyManager.Pages
       offsetY += args.ClientY - startY;
     }
 
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
-      this.employees = this.Repository.GetEmployees();
+      this.employees = await this.Repository.GetEmployeesAsync();
     }
 
     protected void ShowPopup()
@@ -56,33 +57,33 @@ namespace BlazorCompanyManager.Pages
       this.showPopup = false;
     }
 
-    protected void EditRecord(Guid employee)
+    protected async Task EditRecord(Guid employee)
     {
       this.showPopup = true;
       this.employee = this.Repository.GetEmployee(employee);
-      this.employees = this.Repository.GetEmployees();
+      this.employees = await this.Repository.GetEmployeesAsync();
     }
 
-    protected void OnDelete(Guid employee)
+    protected async Task OnDelete(Guid employee)
     {
-      this.Repository.DeleteEmployee(employee);
-      this.employees = this.Repository.GetEmployees();
+      await this.Repository.DeleteEmployeeAsync(employee);
+      this.employees = await this.Repository.GetEmployeesAsync();
     }
 
-    protected void SubmitForm()
+    protected async Task SubmitForm()
     {
       if (employee.Id != Guid.Empty)
       {
-        this.Repository.UpdateEmployee(employee);
+        await this.Repository.UpdateEmployeeAsync(employee);
         this.showPopup = false;
       }
       else
       {
         this.employee.Id = Guid.Empty;
-        this.Repository.AddEmployee(employee);
+        await this.Repository.AddEmployeeAsync(employee);
       }
 
-      this.employees = this.Repository.GetEmployees();
+      this.employees = await this.Repository.GetEmployeesAsync();
     }
   }
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,40 +9,42 @@ namespace BlazorCompanyManager.Data
 {
   public class Repository : IRepository
   {
-    protected readonly ApplicationDbContext dbContext;
+    protected virtual IDbContextFactory<ApplicationDbContext> DBContext { get; set; } = null;
 
-    public Repository(ApplicationDbContext db)
+    public Repository(IConfiguration configuration, IDbContextFactory<ApplicationDbContext> dbContext)
+        => this.DBContext = dbContext;
+
+    public async ValueTask<List<Employee>> GetEmployeesAsync()
     {
-      this.dbContext = db;
+      using ApplicationDbContext dbContext = this.DBContext.CreateDbContext();
+      return await dbContext.EmployeeTable.ToListAsync() ?? new List<Employee>();
     }
 
-    public List<Employee> GetEmployees()
+    public async Task AddEmployeeAsync(Employee employee)
     {
-      return this.dbContext.EmployeeTable.ToList();
+      using ApplicationDbContext dbContext = this.DBContext.CreateDbContext();
+      await dbContext.EmployeeTable.AddAsync(employee);
+      await dbContext.SaveChangesAsync();
     }
 
-    public void AddEmployee(Employee employee)
+    public async Task DeleteEmployeeAsync(Guid id)
     {
-      this.dbContext.EmployeeTable.Add(employee);
-      this.dbContext.SaveChanges();
-    }
-
-    public void DeleteEmployee(Guid id)
-    {
+      using ApplicationDbContext dbContext = this.DBContext.CreateDbContext();
       var employee = GetEmployee(id);
-      this.dbContext.EmployeeTable.Remove(employee);
-      this.dbContext.SaveChanges();
+      dbContext.EmployeeTable.Remove(employee);
+      await dbContext.SaveChangesAsync();
     }
 
-    public bool UpdateEmployee(Employee employee)
+    public async Task<bool> UpdateEmployeeAsync(Employee employee)
     {
-      Employee tempEmployee = this.dbContext.EmployeeTable.FirstOrDefault(x => x.Id == employee.Id);
+      using ApplicationDbContext dbContext = this.DBContext.CreateDbContext();
+      Employee tempEmployee = dbContext.EmployeeTable.FirstOrDefault(x => x.Id == employee.Id);
       if (tempEmployee != null)
       {
         tempEmployee.Name = employee.Name;
         tempEmployee.Department = employee.Department;
         tempEmployee.Salary = employee.Salary;
-        this.dbContext.SaveChanges();
+        await dbContext.SaveChangesAsync();
       }
       else
       {
@@ -51,7 +55,8 @@ namespace BlazorCompanyManager.Data
 
     public Employee GetEmployee(Guid id)
     {
-      return this.dbContext.EmployeeTable.FirstOrDefault(x => x.Id == id);
+      using ApplicationDbContext dbContext = this.DBContext.CreateDbContext();
+      return dbContext.EmployeeTable.FirstOrDefault(x => x.Id == id);
     }
   }
 }
