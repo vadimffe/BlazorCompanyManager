@@ -25,9 +25,10 @@ namespace BlazorCompanyManager.Pages
     protected List<BlazorCompanyManager.Data.Customer> customers;
     protected bool showPopup;
     protected double startX, startY, offsetX, offsetY = 100;
-    protected string cursor = "pointer";
+    protected string cursor = "default";
     protected bool isDragging = false;
     protected bool isLoaded = false;
+    bool isHovering = false;
 
     public CustomersBase()
     {
@@ -60,10 +61,27 @@ namespace BlazorCompanyManager.Pages
         startY = args.ClientY;
       }
     }
+    protected void OnMouseOver(MouseEventArgs mouseEvent)
+    {
+      if (!isHovering)
+      {
+        isHovering = true;
+        cursor = "pointer";
+        StateHasChanged();
+      }
+    }
+
+    protected void OnMouseOut(MouseEventArgs mouseEvent)
+    {
+      isHovering = false;
+      cursor = "default";
+      StateHasChanged();
+    }
+
     protected void OnMouseUp(MouseEventArgs args)
     {
       isDragging = false;
-      cursor = "pointer";
+      cursor = "default";
     }
 
     protected void ShowDialog()

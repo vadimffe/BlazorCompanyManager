@@ -17,7 +17,7 @@
     <div class="modal-dialog">
       <div class="modal-content shadow-lg p-3 mb-5 bg-white rounded"
          style="position:absolute; top: @(offsetY)px; left: @(offsetX)px;cursor:@cursor;">
-        <div class="modal-header" @onmouseup="OnMouseUp" @onmousedown="OnMouseDown">
+        <div class="modal-header" @onmouseup="OnMouseUp" @onmousedown="OnMouseDown" @onmouseover="@OnMouseOver" @onmouseout="@OnMouseOut">
           <h5 class="modal-title">Add new customer</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="CloseDialog">
             <span aria-hidden="true">&times;</span>
