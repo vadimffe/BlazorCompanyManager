@@ -14,36 +14,40 @@ namespace BlazorCompanyManager.Data
     public Repository(IConfiguration configuration, IDbContextFactory<ApplicationDbContext> dbContext)
         => this.DBContext = dbContext;
 
-    public async ValueTask<List<Employee>> GetEmployeesAsync()
+    public async ValueTask<List<Customer>> GetCustomersAsync()
     {
       using ApplicationDbContext dbContext = this.DBContext.CreateDbContext();
-      return await dbContext.EmployeeTable.ToListAsync() ?? new List<Employee>();
+      return await dbContext.CustomerTable.ToListAsync() ?? new List<Customer>();
     }
 
-    public async Task AddEmployeeAsync(Employee employee)
+    public async Task AddCustomersAsync(Customer employee)
     {
       using ApplicationDbContext dbContext = this.DBContext.CreateDbContext();
-      await dbContext.EmployeeTable.AddAsync(employee);
+      await dbContext.CustomerTable.AddAsync(employee);
       await dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteEmployeeAsync(Guid id)
+    public async Task DeleteCustomerAsync(Guid id)
     {
       using ApplicationDbContext dbContext = this.DBContext.CreateDbContext();
-      var employee = GetEmployee(id);
-      dbContext.EmployeeTable.Remove(employee);
+      var employee = GetCustomer(id);
+      dbContext.CustomerTable.Remove(employee);
       await dbContext.SaveChangesAsync();
     }
 
-    public async Task<bool> UpdateEmployeeAsync(Employee employee)
+    public async Task<bool> UpdateCustomerAsync(Customer customer)
     {
       using ApplicationDbContext dbContext = this.DBContext.CreateDbContext();
-      Employee tempEmployee = dbContext.EmployeeTable.FirstOrDefault(x => x.Id == employee.Id);
-      if (tempEmployee != null)
+      Customer tempCustomer = dbContext.CustomerTable.FirstOrDefault(x => x.Id == customer.Id);
+      if (tempCustomer != null)
       {
-        tempEmployee.Name = employee.Name;
-        tempEmployee.Department = employee.Department;
-        tempEmployee.Salary = employee.Salary;
+
+        tempCustomer.CompanyName = customer.CompanyName;
+        tempCustomer.City = customer.City;
+        tempCustomer.Address = customer.Address;
+        tempCustomer.PostCode = customer.PostCode;
+        tempCustomer.PhoneNumber = customer.PhoneNumber;
+        tempCustomer.BusinessID = customer.BusinessID;
         await dbContext.SaveChangesAsync();
       }
       else
@@ -53,10 +57,10 @@ namespace BlazorCompanyManager.Data
       return true;
     }
 
-    public Employee GetEmployee(Guid id)
+    public Customer GetCustomer(Guid id)
     {
       using ApplicationDbContext dbContext = this.DBContext.CreateDbContext();
-      return dbContext.EmployeeTable.FirstOrDefault(x => x.Id == id);
+      return dbContext.CustomerTable.FirstOrDefault(x => x.Id == id);
     }
   }
 }

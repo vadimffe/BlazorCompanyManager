@@ -7,14 +7,14 @@ namespace BlazorCompanyManager.Data
 {
   public interface IRepository
   {
-    public ValueTask<List<Employee>> GetEmployeesAsync();
+    public ValueTask<List<Customer>> GetCustomersAsync();
 
-    public Employee GetEmployee(Guid id);
+    public Customer GetCustomer(Guid id);
 
-    public Task<bool> UpdateEmployeeAsync(Employee employee);
+    public Task<bool> UpdateCustomerAsync(Customer employee);
 
-    public Task AddEmployeeAsync(Employee employee);
+    public Task AddCustomersAsync(Customer employee);
 
-    public Task DeleteEmployeeAsync(Guid id);
+    public Task DeleteCustomerAsync(Guid id);
   }
 }

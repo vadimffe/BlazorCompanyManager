@@ -13,6 +13,6 @@ namespace BlazorCompanyManager.Data
 
     }
 
-    public DbSet<Employee> EmployeeTable { get; set; }
+    public DbSet<Customer> CustomerTable { get; set; }
   }
 }
