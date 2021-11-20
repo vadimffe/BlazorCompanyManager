@@ -1,19 +1,22 @@
 ﻿@page "/customers"
 @inherits CustomersBase
+@inject IJSRuntime JS
+@using ClosedXML.Excel
+@using System.IO
 
 <h1>Customers</h1>
 <br />
 <button class="btn btn-primary" @onclick="ShowDialog">Add customer</button>
-<button class="btn btn-primary" type="button" @onclick="@(() => DownloadExcelDocument())">Download</button>
+<button class="btn btn-primary" type="button" @onclick="@(() => DownloadFile())">Download</button>
 <br />
 <br />
 @if (showPopup)
 {
   <div class="modal" tabindex="-1" style="display: block; background-color: rgba(176, 176, 176, 0.4); "
-       @onmousemove="OnMouseMove">
+     @onmousemove="OnMouseMove">
     <div class="modal-dialog">
       <div class="modal-content shadow-lg p-3 mb-5 bg-white rounded"
-           style="position:absolute; top: @(offsetY)px; left: @(offsetX)px;cursor:@cursor;">
+         style="position:absolute; top: @(offsetY)px; left: @(offsetX)px;cursor:@cursor;">
         <div class="modal-header" @onmouseup="OnMouseUp" @onmousedown="OnMouseDown">
           <h5 class="modal-title">Add new customer</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="CloseDialog">
@@ -118,4 +121,49 @@ else
       }
     </tbody>
   </table>
+}
+
+@functions {
+    private async Task DownloadFile()
+    {
+      using (var workbook = new XLWorkbook())
+      {
+        IXLWorksheet worksheet =
+        workbook.Worksheets.Add("Customers");
+        worksheet.Cell(1, 1).Value = "Company name";
+        worksheet.Cell(1, 2).Value = "City";
+        worksheet.Cell(1, 3).Value = "Address";
+        worksheet.Cell(1, 4).Value = "Post code";
+        worksheet.Cell(1, 5).Value = "Phone number";
+        worksheet.Cell(1, 6).Value = "Business ID";
+
+        for (int i = 1; i <= 6; i++)
+        {
+          worksheet.Cell(1, i).Style.Font.Bold = true;
+          worksheet.Cell(1, i).Style.Fill.BackgroundColor = XLColor.Green;
+        }
+
+        int index = 1;
+        foreach (var customer in this.customers)
+        {
+          worksheet.Cell(index + 1, 1).Value = customer.CompanyName;
+          worksheet.Cell(index + 1, 2).Value = customer.City;
+          worksheet.Cell(index + 1, 3).Value = customer.Address;
+          worksheet.Cell(index + 1, 4).Value = customer.PostCode;
+          worksheet.Cell(index + 1, 5).Value = customer.PhoneNumber;
+          worksheet.Cell(index + 1, 6).Value = customer.BusinessID;
+
+          index++;
+        }
+
+        using (var stream = new MemoryStream())
+        {
+          workbook.SaveAs(stream);
+          var content = stream.ToArray();
+
+          var fileName = "Customers.xlsx";
+          await JS.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(content));
+        }
+      }
+    }
 }

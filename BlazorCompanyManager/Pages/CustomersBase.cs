@@ -106,38 +106,9 @@ namespace BlazorCompanyManager.Pages
       this.customers = await this.Repository.GetCustomersAsync();
     }
 
-    public async Task DownloadExcelDocument()
+    public List<Customer> GetTable()
     {
-      using (var workbook = new XLWorkbook())
-      {
-        IXLWorksheet worksheet =
-        workbook.Worksheets.Add("Customers");
-        worksheet.Cell(1, 1).Value = "Company name";
-        worksheet.Cell(1, 2).Value = "City";
-
-        for (int i = 1; i <= 2; i++)
-        {
-          worksheet.Cell(1, i).Style.Font.Bold = true;
-        }
-
-        int index = 1;
-        foreach (var customer in this.customers)
-        {
-          worksheet.Cell(index + 1, 1).Value = customer.CompanyName;
-          worksheet.Cell(index + 1, 2).Value = customer.City;
-
-          index++;
-        }
-
-        using (var stream = new MemoryStream())
-        {
-          workbook.SaveAs(stream);
-          var content = stream.ToArray();
-
-          var fileName = "Customers.xlsx";
-          await JSRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(content));
-        }
-      }
+      return this.customers;
     }
   }
 }
