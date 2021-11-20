@@ -32,7 +32,6 @@ namespace BlazorCompanyManager
       services.AddDbContextFactory<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MyConnection")), ServiceLifetime.Singleton);
       services.AddRazorPages();
       services.AddServerSideBlazor();
-      //services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MyConnection")));
       services.AddSingleton<WeatherForecastService>();
       services.AddTransient<IRepository, Repository>();
     }
